@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="350dp"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background"
+    android:gravity="center_horizontal">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Post"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#172747"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp" />
+
+    <!-- Post Content -->
+    <EditText
+        android:id="@+id/editTextPostContent"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:hint="What's on your mind?"
+        android:background="@android:drawable/editbox_background"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        android:gravity="top|start"
+        android:padding="16dp"
+        android:inputType="textMultiLine"
+        android:minLines="5"
+        android:scrollbars="vertical" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="20dp">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp" />
+
+        <Button
+            android:id="@+id/btnPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post"
+            android:layout_marginStart="12dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp" />
+    </LinearLayout>
+
+</LinearLayout>
