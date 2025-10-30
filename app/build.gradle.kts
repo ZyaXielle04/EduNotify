@@ -30,6 +30,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+<<<<<<< HEAD
 
     // ✅ Fix duplicate META-INF/NOTICE.md conflicts
     packaging {
@@ -47,10 +48,16 @@ android {
 
 dependencies {
     // ------------------ Android & UI ------------------
+=======
+}
+
+dependencies {
+>>>>>>> 2c8201d26e015646d160557817c446570b615c65
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+<<<<<<< HEAD
 
     // ------------------ Firebase ------------------
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
@@ -73,3 +80,20 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+=======
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.cloudinary:cloudinary-android:3.1.2")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
+}
+>>>>>>> 2c8201d26e015646d160557817c446570b615c65
