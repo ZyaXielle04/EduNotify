@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GetStartedActivity"
+    android:orientation="vertical"
+    android:background="@drawable/background_splash"
+    android:gravity="center_horizontal"
+   >
+
+
+    <ImageView
+        android:layout_marginTop="84dp"
+        android:layout_width="267dp"
+        android:layout_height="267dp"
+        android:src="@drawable/background_get_started"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Stay connected, stay informed, stay ahead. Your school's events, all in one place!"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:padding="30dp"/>
+    
+    
+    <Button
+        android:id="@+id/buttonGetStarted"
+        android:layout_marginTop="70dp"
+        android:layout_width="250dp"
+        android:layout_height="43dp"
+        android:background="@drawable/shape_started_button"
+        android:text="Get Started"
+        android:textAllCaps="false"
+        android:textColor="@color/white"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background_building"
+        android:scaleType="fitXY"/>
+
+
+
+
+</LinearLayout>

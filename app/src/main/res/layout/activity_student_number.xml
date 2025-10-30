@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StudentNumberActivity"
+    android:orientation="vertical"
+    android:background="@drawable/background_splash">
+
+    <!-- ===== TOP HEADER / IMAGE ===== -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:src="@drawable/background_auth"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:text="Student Number"
+            android:textColor="#172747"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="50dp" />
+
+        <TextView
+            android:id="@+id/textSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Please enter the Student ID to continue"
+            android:textColor="#172747"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="95dp" />
+    </FrameLayout>
+
+    <!-- ===== FORM AREA ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_auth"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/iconBell"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/icon_bell_auth"
+            android:layout_marginTop="30dp" />
+
+        <!-- Student Number Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="343dp"
+            android:layout_height="49dp"
+            app:hintEnabled="false"
+            android:layout_marginVertical="10dp"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editStudentNumber"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_edit_text_auth"
+                android:hint="Enter Student Number"
+                android:textColorHint="@color/black"
+                android:paddingStart="10dp"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Confirm Button -->
+        <Button
+            android:id="@+id/buttonSubmitStudentNo"
+            android:layout_marginVertical="15dp"
+            android:layout_width="343dp"
+            android:layout_height="49dp"
+            android:background="@drawable/shape_started_button"
+            android:text="Submit"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:textSize="22sp" />
+
+        <!-- Optional Skip or Back -->
+        <TextView
+            android:id="@+id/textBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go Back"
+            android:textSize="18sp"
+            android:textColor="#195A5D"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+</LinearLayout>
