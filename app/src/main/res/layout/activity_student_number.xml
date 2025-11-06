@@ -37,10 +37,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Please enter the Student ID to continue"
+            android:text="Please enter the Student ID and Section Code to continue"
             android:textColor="#172747"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginTop="95dp" />
     </FrameLayout>
 
@@ -74,6 +75,25 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_edit_text_auth"
                 android:hint="Enter Student Number"
+                android:textColorHint="@color/black"
+                android:paddingStart="10dp"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Section Code Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="343dp"
+            android:layout_height="49dp"
+            app:hintEnabled="false"
+            android:layout_marginVertical="10dp"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSectionCode"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_edit_text_auth"
+                android:hint="Enter Section Code"
                 android:textColorHint="@color/black"
                 android:paddingStart="10dp"
                 android:inputType="number" />

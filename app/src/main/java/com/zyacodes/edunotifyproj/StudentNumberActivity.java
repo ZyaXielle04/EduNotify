@@ -24,7 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class StudentNumberActivity extends AppCompatActivity {
 
-    private TextInputEditText editStudentNumber;
+    private TextInputEditText editStudentNumber, editSectionCode;
+    private View sectionCodeLayout;
     private Button buttonSubmitStudentNo;
     private TextView textBack, textTitle, textSubtitle;
     private ImageView iconBell;
@@ -51,6 +52,8 @@ public class StudentNumberActivity extends AppCompatActivity {
 
         // ✅ Bind UI components
         editStudentNumber = findViewById(R.id.editStudentNumber);
+        editSectionCode = findViewById(R.id.editSectionCode);
+        sectionCodeLayout = (View) editSectionCode.getParent().getParent();
         buttonSubmitStudentNo = findViewById(R.id.buttonSubmitStudentNo);
         textBack = findViewById(R.id.textBack);
         textTitle = findViewById(R.id.textTitle);
@@ -61,14 +64,17 @@ public class StudentNumberActivity extends AppCompatActivity {
         if (selectedRole != null) {
             if (selectedRole.equalsIgnoreCase("Student")) {
                 textTitle.setText("Student Number");
-                textSubtitle.setText("Please enter your Student No. to continue");
+                textSubtitle.setText("Please enter your Student No. and Section Code to continue");
                 editStudentNumber.setHint("Enter your Student No.");
+                sectionCodeLayout.setVisibility(View.VISIBLE); // show section code
             } else if (selectedRole.equalsIgnoreCase("Parent")) {
                 textTitle.setText("Student Number");
                 textSubtitle.setText("Please enter a Student No. to continue");
                 editStudentNumber.setHint("Enter the Student No.");
+                sectionCodeLayout.setVisibility(View.GONE); // hide section code
             } else {
                 textSubtitle.setText("Please enter the Student ID to continue");
+                sectionCodeLayout.setVisibility(View.GONE);
             }
         }
 
@@ -90,6 +96,9 @@ public class StudentNumberActivity extends AppCompatActivity {
         String studentNumber = editStudentNumber.getText() != null
                 ? editStudentNumber.getText().toString().trim()
                 : "";
+        String sectionCode = editSectionCode.getText() != null
+                ? editSectionCode.getText().toString().trim()
+                : "";
 
         if (studentNumber.isEmpty()) {
             Toast.makeText(this, "Please enter a student number", Toast.LENGTH_SHORT).show();
@@ -98,6 +107,11 @@ public class StudentNumberActivity extends AppCompatActivity {
 
         if (selectedRole == null) {
             Toast.makeText(this, "Role not found. Please try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (selectedRole.equalsIgnoreCase("Student") && sectionCode.isEmpty()) {
+            Toast.makeText(this, "Please enter a section code", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -115,7 +129,7 @@ public class StudentNumberActivity extends AppCompatActivity {
                                         "This student number is already registered.",
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                saveStudentData(studentNumber);
+                                saveStudentData(studentNumber, sectionCode);
                             }
                         }
 
@@ -136,7 +150,7 @@ public class StudentNumberActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             hideLoading();
                             if (snapshot.exists()) {
-                                saveStudentData(studentNumber);
+                                saveStudentData(studentNumber, null);
                             } else {
                                 Toast.makeText(StudentNumberActivity.this,
                                         "Student number not found. Please check and try again.",
@@ -155,14 +169,14 @@ public class StudentNumberActivity extends AppCompatActivity {
         } else {
             // ✅ Other roles (if any)
             hideLoading();
-            saveStudentData(studentNumber);
+            saveStudentData(studentNumber, sectionCode);
         }
     }
 
     // ==============================
     // 🔹 SAVE USER DATA TO FIREBASE
     // ==============================
-    private void saveStudentData(String studentNumber) {
+    private void saveStudentData(String studentNumber, String sectionCode) {
         String uid = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
         if (uid == null) {
@@ -184,10 +198,11 @@ public class StudentNumberActivity extends AppCompatActivity {
                 if (selectedRole.equalsIgnoreCase("Student")) {
                     userRef.child("role").setValue("Student");
                     userRef.child("studentNumber").setValue(studentNumber);
+                    userRef.child("sectionCode").setValue(sectionCode);
                     userRef.child("isApproved").setValue(false)
                             .addOnSuccessListener(aVoid -> {
                                 hideLoading();
-                                Toast.makeText(StudentNumberActivity.this, "Student number saved successfully!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StudentNumberActivity.this, "Student data saved successfully!", Toast.LENGTH_SHORT).show();
 
                                 Intent intent = new Intent(StudentNumberActivity.this, PendingPageActivity.class);
                                 startActivity(intent);
@@ -240,6 +255,7 @@ public class StudentNumberActivity extends AppCompatActivity {
                 else {
                     userRef.child("role").setValue(selectedRole);
                     userRef.child("studentNumber").setValue(studentNumber);
+                    userRef.child("sectionCode").setValue(sectionCode);
                     userRef.child("isApproved").setValue(false)
                             .addOnSuccessListener(aVoid -> {
                                 hideLoading();

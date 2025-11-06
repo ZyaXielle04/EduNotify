@@ -33,10 +33,7 @@ import com.zyacodes.edunotifyproj.Adapters.EventsAdapter;
 import com.zyacodes.edunotifyproj.Interfaces.EventActionListener;
 import com.zyacodes.edunotifyproj.Models.Event;
 import com.zyacodes.edunotifyproj.R;
-<<<<<<< HEAD
 import com.zyacodes.edunotifyproj.utils.EmailSender; // <-- Added import
-=======
->>>>>>> 2c8201d26e015646d160557817c446570b615c65
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,10 +60,6 @@ public class AdminEventsActivity extends AppCompatActivity implements EventActio
     private DatabaseReference eventsRef;
     private DatabaseReference usersRef;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2c8201d26e015646d160557817c446570b615c65
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,10 +131,6 @@ public class AdminEventsActivity extends AppCompatActivity implements EventActio
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
         startActivity(new Intent(this, cls));
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-<<<<<<< HEAD
-        
-=======
->>>>>>> 2c8201d26e015646d160557817c446570b615c65
     }
 
     // ---------------------- Event Dialog ----------------------
@@ -221,10 +210,7 @@ public class AdminEventsActivity extends AppCompatActivity implements EventActio
 
     private void saveEvent(boolean isEdit, Event eventToEdit, long dateInMillis, String time,
                            EditText edtTitle, EditText edtDescription, EditText edtVenue, Dialog dialog) {
-<<<<<<< HEAD
 
-=======
->>>>>>> 2c8201d26e015646d160557817c446570b615c65
         String title = edtTitle.getText().toString().trim();
         String description = edtDescription.getText().toString().trim();
         String venue = edtVenue.getText().toString().trim();
@@ -247,7 +233,6 @@ public class AdminEventsActivity extends AppCompatActivity implements EventActio
         } else {
             String key = eventsRef.push().getKey();
             if (key != null) {
-<<<<<<< HEAD
                 usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -289,32 +274,6 @@ public class AdminEventsActivity extends AppCompatActivity implements EventActio
                         Toast.makeText(AdminEventsActivity.this, "Failed to fetch users", Toast.LENGTH_SHORT).show();
                     }
                 });
-=======
-                usersRef.orderByChild("role").equalTo("Student")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                Map<String, Boolean> attendanceMap = new HashMap<>();
-                                for (DataSnapshot userSnap : snapshot.getChildren()) {
-                                    String studentNumber = userSnap.child("studentNumber").getValue(String.class);
-                                    if (studentNumber != null) attendanceMap.put(studentNumber, false);
-                                }
-                                Event newEvent = new Event(key, dateInMillis, title, description, time, venue, false, attendanceMap);
-                                eventsRef.child(key).setValue(newEvent).addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(AdminEventsActivity.this, "Event added!", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                        loadEventsForDate(dateInMillis);
-                                    } else Toast.makeText(AdminEventsActivity.this, "Failed to add event", Toast.LENGTH_SHORT).show();
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(AdminEventsActivity.this, "Failed to fetch students", Toast.LENGTH_SHORT).show();
-                            }
-                        });
->>>>>>> 2c8201d26e015646d160557817c446570b615c65
             }
         }
     }
