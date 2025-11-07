@@ -4,10 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StudentDirectory.StudentEventsActivity"
+    tools:context=".AdminDirectory.AdminReportsActivity"
     android:background="@drawable/background_splash">
 
-    <!-- Main vertical layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,49 +42,60 @@
                         android:layout_height="wrap_content"
                         android:textColor="#172747"
                         android:textSize="36sp"
-                        android:text="Calendar"
+                        android:text="Reports"
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-medium" />
                 </FrameLayout>
 
-                <!-- Calendar Card -->
+                <!-- Reports Summary Section -->
                 <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp">
+                    android:layout_margin="20dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp">
 
-                    <CalendarView
-                        android:id="@+id/calendarView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/reportTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Event Attendance Summary"
+                            android:textStyle="bold"
+                            android:textColor="#195A5D"
+                            android:textSize="18sp"
+                            android:layout_marginBottom="10dp" />
+
+                        <TextView
+                            android:id="@+id/reportText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Loading reports..."
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:lineSpacingExtra="6dp" />
+
+                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Upcoming Events Label -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="Upcoming Event"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="20dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:textStyle="bold"
-                    android:textColor="#195A5D"
-                    android:layout_marginVertical="10dp" />
-
-                <!-- Events RecyclerView -->
+                <!-- RecyclerView for Events -->
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerCalendar"
+                    android:id="@+id/recyclerReports"
                     android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:paddingBottom="20dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="100dp"
+                    tools:listitem="@layout/item_event_report_card" />
 
             </LinearLayout>
         </ScrollView>
 
-        <!-- Fixed Scrollable Bottom Navbar -->
+        <!-- Fixed Bottom Navbar -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -110,13 +120,11 @@
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground"
                     android:padding="4dp">
-
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_input_get"
                         android:tint="#FFFFFF"/>
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -136,17 +144,63 @@
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground"
                     android:padding="4dp">
-
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/icon_home"
                         android:tint="#FFFFFF"/>
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Home"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Users -->
+                <LinearLayout
+                    android:id="@+id/navUsers"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="4dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_secure"
+                        android:tint="#FFFFFF"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Users"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Sections -->
+                <LinearLayout
+                    android:id="@+id/navSections"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="4dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/alert_dark_frame"
+                        android:tint="#FFFFFF"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sections"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -162,17 +216,39 @@
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground"
                     android:padding="4dp">
-
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_agenda"
-                        android:tint="#FFFF00"/>
-
+                        android:tint="#FFFFFF"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Events"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Reports -->
+                <LinearLayout
+                    android:id="@+id/navReports"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="4dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_info_details"
+                        android:tint="#FFFF00"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reports"
                         android:textColor="#FFFF00"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -188,13 +264,11 @@
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground"
                     android:padding="4dp">
-
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_dialog_info"
                         android:tint="#FFFFFF"/>
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

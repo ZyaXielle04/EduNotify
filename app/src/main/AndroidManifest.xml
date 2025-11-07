@@ -20,6 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EduNotifyProj">
         <activity
+            android:name=".AdminDirectory.AdminReportsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDirectory.AdminSectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ParentDirectory.ParentSettingsActivity"
             android:exported="false" />
         <activity

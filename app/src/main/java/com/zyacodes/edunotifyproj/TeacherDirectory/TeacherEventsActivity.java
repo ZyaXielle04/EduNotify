@@ -5,18 +5,22 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.CalendarView;
 import android.widget.Toast;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +61,7 @@ public class TeacherEventsActivity extends AppCompatActivity {
     private long selectedDate; // selected date in millis
     private DatabaseReference eventsRef;
     private DatabaseReference usersRef;
+    private DatabaseReference sectionsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,7 @@ public class TeacherEventsActivity extends AppCompatActivity {
         FirebaseDatabase db = FirebaseDatabase.getInstance("https://edunotifyproj-default-rtdb.asia-southeast1.firebasedatabase.app/");
         eventsRef = db.getReference("events");
         usersRef = db.getReference("users");
+        sectionsRef = db.getReference("sections");
     }
 
     private void setupRecyclerView() {
@@ -238,7 +244,10 @@ public class TeacherEventsActivity extends AppCompatActivity {
                                     String studentNumber = userSnap.child("studentNumber").getValue(String.class);
                                     if (studentNumber != null) attendanceMap.put(studentNumber, false);
                                 }
-                                Event newEvent = new Event(key, dateInMillis, title, description, time, venue, false, attendanceMap);
+                                Map<String, Map<String, Boolean>> nestedAttendance = new HashMap<>();
+                                nestedAttendance.put("allStudents", attendanceMap);
+
+                                Event newEvent = new Event(key, dateInMillis, title, description, time, venue, false, nestedAttendance);
                                 eventsRef.child(key).setValue(newEvent).addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(TeacherEventsActivity.this, "Event added!", Toast.LENGTH_SHORT).show();
@@ -296,7 +305,7 @@ public class TeacherEventsActivity extends AppCompatActivity {
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
-    // ---------------------- Attendance Dialog ----------------------
+    // ---------------------- Updated Attendance Dialog ----------------------
     public void openAttendanceDialog(Event event) {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -305,19 +314,19 @@ public class TeacherEventsActivity extends AppCompatActivity {
 
         LinearLayout container = dialog.findViewById(R.id.attendanceContainer);
         Button btnSave = dialog.findViewById(R.id.btnSaveAttendance);
+        Spinner spinnerSections = dialog.findViewById(R.id.spinnerSections);
 
         if (container != null) container.removeAllViews();
 
-        // Set dialog width to 60% of screen and height to wrap content but max 80% of screen
+        // ------------------ Set dialog width to 90% ------------------
         Window window = dialog.getWindow();
         if (window != null) {
-            android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
-            int width = (int) (metrics.widthPixels * 0.6); // 60% width
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            int width = (int) (metrics.widthPixels * 0.9); // 90% of screen width
             int maxHeight = (int) (metrics.heightPixels * 0.8); // 80% max height
             window.setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT);
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-            // Limit ScrollView height dynamically
             ScrollView scrollView = dialog.findViewById(R.id.scrollAttendance);
             if (scrollView != null) {
                 scrollView.post(() -> {
@@ -329,88 +338,102 @@ public class TeacherEventsActivity extends AppCompatActivity {
             }
         }
 
-        // --- Existing attendance loading logic ---
-        eventsRef.child(event.getId()).child("attendance")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Map<String, Boolean> attendanceMap = new HashMap<>();
-                        if (snapshot.exists()) {
-                            for (DataSnapshot child : snapshot.getChildren()) {
-                                attendanceMap.put(child.getKey(), child.getValue(Boolean.class));
-                            }
-                        }
+        // Load sections
+        List<String> sectionCodes = new ArrayList<>();
+        List<String> sectionLabels = new ArrayList<>();
+        sectionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot secSnap : snapshot.getChildren()) {
+                    String code = secSnap.getKey();
+                    String college = secSnap.child("college").getValue(String.class);
+                    String program = secSnap.child("program").getValue(String.class);
+                    String yearLevel = secSnap.child("yearLevel").getValue(String.class);
+                    String section = secSnap.child("section").getValue(String.class);
 
-                        if (attendanceMap.isEmpty()) {
-                            TextView emptyText = new TextView(TeacherEventsActivity.this);
-                            emptyText.setText("There are no attendees in this event");
-                            emptyText.setTextSize(16f);
-                            emptyText.setPadding(8, 8, 8, 8);
-                            container.addView(emptyText);
-                            btnSave.setVisibility(View.GONE);
-                        } else if (event.isClosed()) {
-                            for (Map.Entry<String, Boolean> entry : attendanceMap.entrySet()) {
-                                String studentNumber = entry.getKey();
-                                Boolean present = entry.getValue();
-                                TextView txtStatus = new TextView(TeacherEventsActivity.this);
-                                txtStatus.setText(studentNumber + ": " + (present != null && present ? "Present" : "Absent"));
-                                txtStatus.setTextSize(16f);
-                                txtStatus.setPadding(8, 8, 8, 8);
-                                container.addView(txtStatus);
-                            }
-                            btnSave.setVisibility(View.GONE);
-                        } else {
-                            usersRef.orderByChild("role").equalTo("Student")
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot usersSnap) {
-                                            for (DataSnapshot userSnap : usersSnap.getChildren()) {
-                                                String studentNumber = userSnap.child("studentNumber").getValue(String.class);
-                                                String username = userSnap.child("username").getValue(String.class);
-                                                if (studentNumber == null || username == null) continue;
+                    sectionCodes.add(code);
+                    sectionLabels.add(college + " | " + program + " - " + yearLevel + section);
+                }
+                spinnerSections.setAdapter(new ArrayAdapter<>(TeacherEventsActivity.this,
+                        android.R.layout.simple_spinner_dropdown_item, sectionLabels));
+            }
 
-                                                CheckBox checkBox = new CheckBox(TeacherEventsActivity.this);
-                                                checkBox.setText(username + " (" + studentNumber + ")");
-                                                checkBox.setTag(studentNumber);
-                                                checkBox.setChecked(attendanceMap.getOrDefault(studentNumber, false));
-                                                container.addView(checkBox);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
+        spinnerSections.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedSection = sectionCodes.get(position);
+                container.removeAllViews();
+
+                usersRef.orderByChild("role").equalTo("Student")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                                    String role = userSnap.child("role").getValue(String.class);
+                                    String studentSection = userSnap.child("sectionCode").getValue(String.class);
+                                    String studentNumber = userSnap.child("studentNumber").getValue(String.class);
+                                    String username = userSnap.child("username").getValue(String.class);
+
+                                    if ("Student".equalsIgnoreCase(role) && selectedSection.equals(studentSection) &&
+                                            studentNumber != null && username != null) {
+                                        CheckBox checkBox = new CheckBox(TeacherEventsActivity.this);
+                                        checkBox.setText(username + " (" + studentNumber + ")");
+                                        checkBox.setTag(studentNumber);
+
+                                        if (event.getAttendance() != null) {
+                                            Object sectionObj = event.getAttendance().get(selectedSection);
+                                            if (sectionObj instanceof Map) {
+                                                Map<String, Object> sectionMap = (Map<String, Object>) sectionObj;
+                                                Object val = sectionMap.get(studentNumber);
+                                                if (val instanceof Boolean && (Boolean) val) checkBox.setChecked(true);
                                             }
+                                        }
 
-                                            btnSave.setOnClickListener(v -> {
-                                                Map<String, Boolean> updatedAttendance = new HashMap<>();
-                                                for (int i = 0; i < container.getChildCount(); i++) {
-                                                    View view = container.getChildAt(i);
-                                                    if (view instanceof CheckBox) {
-                                                        CheckBox cb = (CheckBox) view;
-                                                        String studentNumber = (String) cb.getTag();
-                                                        updatedAttendance.put(studentNumber, cb.isChecked());
-                                                    }
+                                        checkBox.setEnabled(!event.isClosed());
+                                        container.addView(checkBox);
+                                    }
+                                }
+
+                                btnSave.setVisibility(event.isClosed() ? View.GONE : View.VISIBLE);
+                                btnSave.setOnClickListener(v -> {
+                                    Map<String, Object> attendanceData = new HashMap<>();
+                                    for (int i = 0; i < container.getChildCount(); i++) {
+                                        View view = container.getChildAt(i);
+                                        if (view instanceof CheckBox) {
+                                            CheckBox cb = (CheckBox) view;
+                                            attendanceData.put((String) cb.getTag(), cb.isChecked());
+                                        }
+                                    }
+
+                                    eventsRef.child(event.getId())
+                                            .child("attendance")
+                                            .child(selectedSection)
+                                            .updateChildren(attendanceData)
+                                            .addOnCompleteListener(task -> {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(TeacherEventsActivity.this, "Attendance saved!", Toast.LENGTH_SHORT).show();
+                                                    dialog.dismiss();
+                                                } else {
+                                                    Toast.makeText(TeacherEventsActivity.this, "Failed to save attendance", Toast.LENGTH_SHORT).show();
                                                 }
-                                                eventsRef.child(event.getId()).child("attendance").setValue(updatedAttendance)
-                                                        .addOnCompleteListener(task -> {
-                                                            if (task.isSuccessful()) {
-                                                                Toast.makeText(TeacherEventsActivity.this, "Attendance updated!", Toast.LENGTH_SHORT).show();
-                                                                dialog.dismiss();
-                                                            } else {
-                                                                Toast.makeText(TeacherEventsActivity.this, "Failed to update attendance", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
                                             });
-                                        }
+                                });
+                            }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            Toast.makeText(TeacherEventsActivity.this, "Failed to load students", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(TeacherEventsActivity.this, "Failed to load students", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(TeacherEventsActivity.this, "Failed to load attendance", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         dialog.show();
     }

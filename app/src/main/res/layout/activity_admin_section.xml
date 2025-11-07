@@ -3,27 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".AdminDirectory.AdminDashboardActivity"
     android:orientation="vertical"
-    android:background="#FFFFFF"
-    tools:context=".ParentDirectory.ParentHomeActivity">
+    android:background="#FFFFFF">
 
     <!-- Scrollable main content -->
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <!-- Header -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp">
+                android:layout_height="150dp"
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -37,24 +38,31 @@
                     android:layout_height="wrap_content"
                     android:textColor="#172747"
                     android:textSize="28sp"
-                    android:text="News Feed!"
+                    android:text="Welcome, Admin!"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium" />
             </FrameLayout>
 
-            <!-- RecyclerView for posts -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerPosts"
+            <!-- Add Section Button -->
+            <Button
+                android:id="@+id/btnAddSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:scrollbars="vertical" />
+                android:text="Add Section"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#172747"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- RecyclerView for displaying sections -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSections"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
     <!-- Fixed Scrollable Bottom Navbar -->
     <HorizontalScrollView
@@ -70,8 +78,6 @@
             android:orientation="horizontal"
             android:gravity="center_horizontal">
 
-            <!-- Each item (icon + label) -->
-            <!-- Dashboard -->
             <LinearLayout
                 android:id="@+id/navDashboard"
                 android:layout_width="100dp"
@@ -82,13 +88,11 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
                 android:padding="4dp">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_input_get"
                     android:tint="#FFFFFF"/>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,7 +101,6 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Home -->
             <LinearLayout
                 android:id="@+id/navHome"
                 android:layout_width="100dp"
@@ -108,24 +111,92 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
                 android:padding="4dp">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/icon_home"
-                    android:tint="#FFFF00"/>
-
+                    android:tint="#FFFFFF"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Home"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navUsers"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:padding="4dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_secure"
+                    android:tint="#FFFFFF"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Users"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navSections"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:padding="4dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/alert_dark_frame"
+                    android:tint="#FFFF00"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sections"
                     android:textColor="#FFFF00"
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Events -->
             <LinearLayout
                 android:id="@+id/navEvents"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_agenda"
+                    android:tint="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Events"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Reports -->
+            <LinearLayout
+                android:id="@+id/navReports"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -138,18 +209,17 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_agenda"
+                    android:src="@android:drawable/ic_menu_info_details"
                     android:tint="#FFFFFF"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Events"
+                    android:text="Reports"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Settings -->
             <LinearLayout
                 android:id="@+id/navSettings"
                 android:layout_width="100dp"
@@ -160,13 +230,11 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
                 android:padding="4dp">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_dialog_info"
                     android:tint="#FFFFFF"/>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -174,8 +242,6 @@
                     android:textColor="#FFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
-
-            <!-- Add more items here -->
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -29,6 +29,7 @@ import com.zyacodes.edunotifyproj.ParentDirectory.ParentSettingsActivity;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public class ParentEventsActivity extends AppCompatActivity implements EventActionListener {
 
@@ -132,19 +133,27 @@ public class ParentEventsActivity extends AppCompatActivity implements EventActi
 
                                 // If event is closed, check attendance for the student's number
                                 if (event.isClosed() && event.getAttendance() != null) {
-                                    Boolean isPresent = event.getAttendance().get(studentNumber);
-                                    if (isPresent == null) {
-                                        event.setStatus("Not Recorded");
-                                    } else if (isPresent) {
-                                        event.setStatus("Present");
+                                    // Get the nested map
+                                    Map<String, Boolean> attendanceMap = event.getAttendance().get("allStudents");
+
+                                    if (attendanceMap != null) {
+                                        Boolean isPresent = attendanceMap.get(studentNumber);
+                                        if (isPresent == null) {
+                                            event.setStatus("Not Recorded");
+                                        } else if (isPresent) {
+                                            event.setStatus("Present");
+                                        } else {
+                                            event.setStatus("Absent");
+                                        }
                                     } else {
-                                        event.setStatus("Absent");
+                                        event.setStatus("Not Recorded");
                                     }
                                 } else if (event.isClosed()) {
                                     event.setStatus("Not Recorded");
                                 } else {
                                     event.setStatus("Open");
                                 }
+
 
                                 filtered.add(event);
                             }

@@ -122,41 +122,64 @@ public class StudentDashboardActivity extends AppCompatActivity {
     // ===================================
     // 🔹 LOAD ATTENDANCE BASED ON TRUE/FALSE
     // ===================================
+    // ===================================
+// 🔹 LOAD ATTENDANCE BASED ON TRUE/FALSE AND SECTION
+// ===================================
     private void loadStudentAttendance(String studentNumber) {
-        eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int totalEvents = 0;
-                int attendedCount = 0;
+        // First, get the student's sectionCode
+        usersRef.orderByChild("studentNumber").equalTo(studentNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String sectionCodeTemp = "";
+                            for (DataSnapshot childSnap : snapshot.getChildren()) {
+                                sectionCodeTemp = childSnap.child("sectionCode").getValue(String.class);
+                                break; // only need first match
+                            }
 
-                for (DataSnapshot eventSnap : snapshot.getChildren()) {
-                    DataSnapshot attendanceSnap = eventSnap.child("attendance");
-                    if (attendanceSnap.exists()) {
-                        totalEvents++;
+                            final String sectionCode = sectionCodeTemp; // final for inner class
+                            if (sectionCode == null || sectionCode.isEmpty()) {
+                                tvAttendance.setText("No section info");
+                                return;
+                            }
 
-                        Boolean attended = attendanceSnap.child(studentNumber).getValue(Boolean.class);
-                        if (attended != null && attended) {
-                            attendedCount++;
+                            // Now fetch attendance from /events/{eventId}/attendance/{sectionCode}/{studentNumber}
+                            eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot eventsSnapshot) {
+                                    int totalEvents = 0;
+                                    int attendedCount = 0;
+
+                                    for (DataSnapshot eventSnap : eventsSnapshot.getChildren()) {
+                                        DataSnapshot attendanceSnap = eventSnap.child("attendance").child(sectionCode).child(studentNumber);
+                                        if (attendanceSnap.exists()) {
+                                            totalEvents++;
+                                            Boolean attended = attendanceSnap.getValue(Boolean.class);
+                                            if (Boolean.TRUE.equals(attended)) attendedCount++;
+                                        }
+                                    }
+
+                                    int percentage = totalEvents == 0 ? 0 : (int) (((double) attendedCount / totalEvents) * 100);
+                                    tvAttendance.setText(percentage + "%");
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    tvAttendance.setText("Error");
+                                }
+                            });
+
+                        } else {
+                            tvAttendance.setText("Student not found");
                         }
                     }
-                }
 
-                // If no events yet
-                if (totalEvents == 0) {
-                    tvAttendance.setText("0%");
-                    return;
-                }
-
-                // Calculate attendance percentage
-                int percentage = (int) (((double) attendedCount / totalEvents) * 100);
-                tvAttendance.setText(percentage + "%");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                tvAttendance.setText("Error");
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        tvAttendance.setText("Error");
+                    }
+                });
     }
 
     // ===================================

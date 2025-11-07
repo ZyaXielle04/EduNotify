@@ -43,7 +43,7 @@ public class AdminUsersActivity extends AppCompatActivity {
     private Spinner filterRole, filterApproval;
 
     // Navbar items
-    private LinearLayout navDashboard, navHome, navUsers, navEvents, navSettings, navLogout;
+    private LinearLayout navDashboard, navHome, navUsers, navSections, navEvents, navReports, navSettings, navLogout;
     private ScrollView mainScrollView;
 
     @Override
@@ -74,7 +74,9 @@ public class AdminUsersActivity extends AppCompatActivity {
         navDashboard = findViewById(R.id.navDashboard);
         navHome = findViewById(R.id.navHome);
         navUsers = findViewById(R.id.navUsers);
+        navSections = findViewById(R.id.navSections);
         navEvents = findViewById(R.id.navEvents);
+        navReports = findViewById(R.id.navReports);
         navSettings = findViewById(R.id.navSettings);
         mainScrollView = findViewById(R.id.mainScrollView);
 
@@ -129,9 +131,21 @@ public class AdminUsersActivity extends AppCompatActivity {
             }
         });
 
+        navSections.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Section Manager", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminSectionActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
         navEvents.setOnClickListener(v -> {
             Toast.makeText(this, "Opening Events / Reports...", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, AdminEventsActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
+        navReports.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Reports Manager...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminReportsActivity.class));
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 

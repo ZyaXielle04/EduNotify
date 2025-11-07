@@ -72,7 +72,6 @@ public class StudentEventsActivity extends AppCompatActivity implements EventAct
 
     private void setupRecyclerView() {
         recyclerCalendar.setLayoutManager(new LinearLayoutManager(this));
-        // Set editable = false (so no admin actions show)
         eventsAdapter = new EventsAdapter(eventList, this, false);
         recyclerCalendar.setAdapter(eventsAdapter);
     }

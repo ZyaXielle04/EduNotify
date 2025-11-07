@@ -37,7 +37,7 @@ public class AdminSettingsActivity extends AppCompatActivity {
     private TextView txtCacheSize;
 
     // Bottom Navbar
-    private LinearLayout navDashboard, navHome, navUsers, navEvents, navSettings;
+    private LinearLayout navDashboard, navHome, navUsers, navSections, navEvents, navReports, navSettings;
 
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
@@ -84,7 +84,9 @@ public class AdminSettingsActivity extends AppCompatActivity {
         navDashboard = findViewById(R.id.navDashboard);
         navHome = findViewById(R.id.navHome);
         navUsers = findViewById(R.id.navUsers);
+        navSections = findViewById(R.id.navSections);
         navEvents = findViewById(R.id.navEvents);
+        navReports = findViewById(R.id.navReports);
         navSettings = findViewById(R.id.navSettings);
 
         // Disable email field (not editable)
@@ -137,7 +139,9 @@ public class AdminSettingsActivity extends AppCompatActivity {
         navDashboard.setOnClickListener(v -> openActivity(AdminDashboardActivity.class));
         navHome.setOnClickListener(v -> openActivity(AdminHomeActivity.class));
         navUsers.setOnClickListener(v -> openActivity(AdminUsersActivity.class));
+        navSections.setOnClickListener(v -> openActivity(AdminSectionActivity.class));
         navEvents.setOnClickListener(v -> openActivity(AdminEventsActivity.class));
+        navReports.setOnClickListener(v -> openActivity(AdminReportsActivity.class));
         navSettings.setOnClickListener(v -> Toast.makeText(this, "Already in Settings", Toast.LENGTH_SHORT).show());
 
 

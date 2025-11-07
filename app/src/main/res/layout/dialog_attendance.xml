@@ -6,6 +6,13 @@
     android:padding="16dp"
     android:background="@android:color/white">
 
+    <Spinner
+        android:id="@+id/spinnerSections"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:spinnerMode="dropdown"/>
+
     <!-- Scrollable container for checkboxes or status -->
     <ScrollView
         android:id="@+id/scrollAttendance"

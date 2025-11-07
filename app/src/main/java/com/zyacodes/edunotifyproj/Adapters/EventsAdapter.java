@@ -170,24 +170,56 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         }
 
         holder.txtStatus.setText("Attendance: Loading...");
-        eventsRef.child(event.getId())
-                .child("attendance")
-                .child(currentStudentNumber)
+
+        // Fetch the student's sectionCode from users
+        usersRef.orderByChild("studentNumber").equalTo(currentStudentNumber)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            Boolean isPresent = snapshot.getValue(Boolean.class);
-                            if (Boolean.TRUE.equals(isPresent)) {
-                                holder.txtStatus.setText("Attendance: Present");
-                                holder.txtStatus.setTextColor(0xFF2E7D32); // green
+                            String sectionCode = "";
+                            for (DataSnapshot child : snapshot.getChildren()) {
+                                sectionCode = child.child("sectionCode").getValue(String.class);
+                                break; // only need first match
+                            }
+
+                            if (sectionCode != null && !sectionCode.isEmpty()) {
+                                // Fetch attendance under /attendance/{sectionCode}/{studentNumber}
+                                eventsRef.child(event.getId())
+                                        .child("attendance")
+                                        .child(sectionCode)
+                                        .child(currentStudentNumber)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists()) {
+                                                    Boolean isPresent = snapshot.getValue(Boolean.class);
+                                                    if (Boolean.TRUE.equals(isPresent)) {
+                                                        holder.txtStatus.setText("Attendance: Present");
+                                                        holder.txtStatus.setTextColor(0xFF2E7D32);
+                                                    } else {
+                                                        holder.txtStatus.setText("Attendance: Absent");
+                                                        holder.txtStatus.setTextColor(0xFFD32F2F);
+                                                    }
+                                                } else {
+                                                    holder.txtStatus.setText("Attendance: Not recorded");
+                                                    holder.txtStatus.setTextColor(0xFF757575);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                holder.txtStatus.setText("Attendance: Error");
+                                                holder.txtStatus.setTextColor(0xFFD32F2F);
+                                            }
+                                        });
                             } else {
-                                holder.txtStatus.setText("Attendance: Absent");
-                                holder.txtStatus.setTextColor(0xFFD32F2F); // red
+                                holder.txtStatus.setText("Attendance: No section info");
+                                holder.txtStatus.setTextColor(0xFFD32F2F);
                             }
                         } else {
-                            holder.txtStatus.setText("Attendance: Not recorded");
-                            holder.txtStatus.setTextColor(0xFF757575);
+                            holder.txtStatus.setText("Attendance: Student not found");
+                            holder.txtStatus.setTextColor(0xFFD32F2F);
                         }
                     }
 

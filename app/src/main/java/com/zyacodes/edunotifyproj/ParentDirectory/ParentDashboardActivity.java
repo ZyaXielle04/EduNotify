@@ -103,31 +103,60 @@ public class ParentDashboardActivity extends AppCompatActivity {
     }
 
     // Load attendance of child
-    private void loadChildAttendance(String parentNumber) {
-        eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int totalEvents = 0;
-                int attendedCount = 0;
+    private void loadChildAttendance(String childStudentNumber) {
+        // First, get the child's sectionCode
+        usersRef.orderByChild("studentNumber").equalTo(childStudentNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String sectionCodeTemp = "";
+                            for (DataSnapshot childSnap : snapshot.getChildren()) {
+                                sectionCodeTemp = childSnap.child("sectionCode").getValue(String.class);
+                                break; // only need first match
+                            }
 
-                for (DataSnapshot eventSnap : snapshot.getChildren()) {
-                    DataSnapshot attendanceSnap = eventSnap.child("attendance");
-                    if (attendanceSnap.exists()) {
-                        totalEvents++;
-                        Boolean attended = attendanceSnap.child(parentNumber).getValue(Boolean.class);
-                        if (attended != null && attended) attendedCount++;
+                            final String sectionCode = sectionCodeTemp; // make it final
+                            if (sectionCode == null || sectionCode.isEmpty()) {
+                                tvAttendance.setText("No section info");
+                                return;
+                            }
+
+                            // Now safe to use inside the inner class
+                            eventsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot eventsSnapshot) {
+                                    int totalEvents = 0;
+                                    int attendedCount = 0;
+
+                                    for (DataSnapshot eventSnap : eventsSnapshot.getChildren()) {
+                                        DataSnapshot attendanceSnap = eventSnap.child("attendance").child(sectionCode).child(childStudentNumber);
+                                        if (attendanceSnap.exists()) {
+                                            totalEvents++;
+                                            Boolean attended = attendanceSnap.getValue(Boolean.class);
+                                            if (Boolean.TRUE.equals(attended)) attendedCount++;
+                                        }
+                                    }
+
+                                    int percentage = totalEvents == 0 ? 0 : (int) (((double) attendedCount / totalEvents) * 100);
+                                    tvAttendance.setText(percentage + "%");
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    tvAttendance.setText("Error");
+                                }
+                            });
+                        } else {
+                            tvAttendance.setText("Student not found");
+                        }
                     }
-                }
 
-                int percentage = totalEvents == 0 ? 0 : (int) (((double) attendedCount / totalEvents) * 100);
-                tvAttendance.setText(percentage + "%");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                tvAttendance.setText("Error");
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        tvAttendance.setText("Error");
+                    }
+                });
     }
 
     // Load total events

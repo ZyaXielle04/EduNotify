@@ -2,6 +2,7 @@ package com.zyacodes.edunotifyproj.AdminDirectory;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -22,7 +23,7 @@ import com.zyacodes.edunotifyproj.R;
 public class AdminDashboardActivity extends AppCompatActivity {
 
     private TextView tvVerifiedUsers, tvPendingUsers, tvTeachers, tvStudents, tvParents, tvActiveEvents, tvAnnouncements, tvAttendance;
-    private LinearLayout cardVerifiedUsers, cardPendingUsers, cardTeachers, cardStudents, cardParents, cardEvents, cardPosts, cardAttendance, navDashboard, navHome, navUsers, navEvents, navSettings;
+    private LinearLayout cardVerifiedUsers, cardPendingUsers, cardTeachers, cardStudents, cardParents, cardEvents, cardPosts, cardAttendance, navReports, navDashboard, navHome, navUsers, navSections, navEvents, navSettings;
 
     private Button btnAddEvent, btnManageUsers;
     private ScrollView mainScrollView;
@@ -43,7 +44,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         navDashboard = findViewById(R.id.navDashboard);
         navHome = findViewById(R.id.navHome);
         navUsers = findViewById(R.id.navUsers);
+        navSections = findViewById(R.id.navSections);
         navEvents = findViewById(R.id.navEvents);
+        navReports = findViewById(R.id.navReports);
         navSettings = findViewById(R.id.navSettings);
         mainScrollView = findViewById(R.id.mainScrollView);
 
@@ -99,9 +102,21 @@ public class AdminDashboardActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
+        navSections.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Section Manager...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminSectionActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
         navEvents.setOnClickListener(v -> {
             Toast.makeText(this, "Opening Events / Reports...", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, AdminEventsActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
+        navReports.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Reports Manager...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminReportsActivity.class));
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
@@ -175,12 +190,21 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
                 for (DataSnapshot eventSnap : snapshot.getChildren()) {
                     DataSnapshot attendanceSnap = eventSnap.child("attendance");
-                    int total = (int) attendanceSnap.getChildrenCount();
+                    int total = 0;
                     int present = 0;
 
                     for (DataSnapshot userSnap : attendanceSnap.getChildren()) {
-                        Boolean attended = userSnap.getValue(Boolean.class);
-                        if (attended != null && attended) present++;
+                        // userSnap = QF9RZ4
+                        for (DataSnapshot innerSnap : userSnap.getChildren()) {
+                            // innerSnap = 202235096 : true
+                            Object value = innerSnap.getValue();
+                            if (value instanceof Boolean) {
+                                total++;
+                                if ((Boolean) value) present++;
+                            } else {
+                                Log.w("AdminDashboard", "Unexpected attendance value: " + value);
+                            }
+                        }
                     }
 
                     totalAttendanceCount += total;

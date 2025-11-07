@@ -146,24 +146,25 @@ public class TeacherDashboardActivity extends AppCompatActivity {
                 long activeEvents = snapshot.getChildrenCount();
                 tvActiveEvents.setText(String.valueOf(activeEvents));
 
-                // Calculate attendance
                 int totalAttendanceCount = 0;
                 int totalPresentCount = 0;
 
                 for (DataSnapshot eventSnap : snapshot.getChildren()) {
                     DataSnapshot attendanceSnap = eventSnap.child("attendance");
-                    int total = (int) attendanceSnap.getChildrenCount();
-                    int present = 0;
-
-                    for (DataSnapshot userSnap : attendanceSnap.getChildren()) {
-                        Boolean attended = userSnap.getValue(Boolean.class);
-                        if (attended != null && attended) present++;
+                    if (attendanceSnap.exists()) {
+                        // Iterate over sections
+                        for (DataSnapshot sectionSnap : attendanceSnap.getChildren()) {
+                            // Iterate over students in section
+                            for (DataSnapshot studentSnap : sectionSnap.getChildren()) {
+                                Boolean attended = studentSnap.getValue(Boolean.class);
+                                if (attended != null && attended) totalPresentCount++;
+                                totalAttendanceCount++;
+                            }
+                        }
                     }
-
-                    totalAttendanceCount += total;
-                    totalPresentCount += present;
                 }
 
+                // Calculate percentage
                 if (totalAttendanceCount > 0) {
                     int percentage = (int) ((totalPresentCount * 100.0) / totalAttendanceCount);
                     tvAttendance.setText(percentage + "%");

@@ -24,7 +24,7 @@ import java.util.*;
 public class AdminHomeActivity extends AppCompatActivity {
 
     private TextView inputPost;
-    private LinearLayout navDashboard, navHome, navUsers, navEvents, navSettings, navLogout;
+    private LinearLayout navDashboard, navHome, navUsers, navEvents, navSettings, navSections, navReports, navLogout;
     private NestedScrollView mainScrollView;
     private FirebaseAuth mAuth;
     private Dialog currentDialog;
@@ -48,7 +48,9 @@ public class AdminHomeActivity extends AppCompatActivity {
         navDashboard = findViewById(R.id.navDashboard);
         navHome = findViewById(R.id.navHome);
         navUsers = findViewById(R.id.navUsers);
+        navSections = findViewById(R.id.navSections);
         navEvents = findViewById(R.id.navEvents);
+        navReports = findViewById(R.id.navReports);
         navSettings = findViewById(R.id.navSettings);
         mainScrollView = findViewById(R.id.mainScrollView);
 
@@ -84,9 +86,21 @@ public class AdminHomeActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
+        navSections.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Section Manager...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminSectionActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
         navEvents.setOnClickListener(v -> {
             Toast.makeText(this, "Opening Events / Reports...", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, AdminEventsActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
+
+        navReports.setOnClickListener(v -> {
+            Toast.makeText(this, "Opening Reports Manager...", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AdminReportsActivity.class));
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
